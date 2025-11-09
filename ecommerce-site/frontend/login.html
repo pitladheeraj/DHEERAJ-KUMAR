@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Bhaash.in</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1 style="text-align:center;">Bhaash.in</h1>
+    </header>
+    <main>
+        <section style="max-width:400px;margin:2em auto;">
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="text" id="login-username" placeholder="Username" required><br><br>
+                <input type="password" id="login-password" placeholder="Password" required><br><br>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="register.html">Register</a></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 E-Commerce Site</p>
+    </footer>
+    <script>
+    document.getElementById('login-form').onsubmit = function(e) {
+        e.preventDefault();
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (
+            user &&
+            user.username === document.getElementById('login-username').value &&
+            user.password === document.getElementById('login-password').value
+        ) {
+            localStorage.setItem('loggedIn', 'true');
+            window.location.href = 'index.html';
+        } else {
+            alert('Invalid credentials!');
+        }
+    };
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Bhaash.in</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1 style="text-align:center;">Bhaash.in</h1>
+    </header>
+    <main>
+        <section style="max-width:400px;margin:2em auto;">
+            <h2>Create Account</h2>
+            <form id="register-form">
+                <input type="text" id="reg-username" placeholder="Username" required><br><br>
+                <input type="email" id="reg-email" placeholder="Email" required><br><br>
+                <input type="password" id="reg-password" placeholder="Password" required><br><br>
+                <button type="submit">Register</button>
+            </form>
+            <p>Already have an account? <a href="login.html">Login</a></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 E-Commerce Site</p>
+    </footer>
+    <script>
+    document.getElementById('register-form').onsubmit = function(e) {
+        e.preventDefault();
+        localStorage.setItem('user', JSON.stringify({
+            username: document.getElementById('reg-username').value,
+            email: document.getElementById('reg-email').value,
+            password: document.getElementById('reg-password').value
+        }));
+        alert('Registration successful! Please login.');
+        window.location.href = 'login.html';
+    };
+    </script>
+</body>
+</html>
