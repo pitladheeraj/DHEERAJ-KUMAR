@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Todo App (CDN + Babel)</title>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- React + ReactDOM UMD builds (development) -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- Babel (in-browser JSX transpiler) - development only -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Inline app (uses JSX, transpiled by Babel) -->
+    <script type="text/babel">
+      const initialTasks = [
+        { id: 1, title: "Learn React basics", completed: false },
+        { id: 2, title: "Build a todo app", completed: true }
+      ];
+
+      function App() {
+        const [tasks, setTasks] = React.useState(initialTasks);
+        const [newTaskTitle, setNewTaskTitle] = React.useState("");
+        const [editingId, setEditingId] = React.useState(null);
+        const [editingTitle, setEditingTitle] = React.useState("");
+
+        const getNextId = () => {
+          if (tasks.length === 0) return 1;
+          const maxId = tasks.reduce((max, t) => (t.id > max ? t.id : max), tasks[0].id);
+          return maxId + 1;
+        };
+
+        const handleAddTask = (e) => {
+          e.preventDefault();
+          const trimmed = newTaskTitle.trim();
+          if (!trimmed) return;
+          const newTask = { id: getNextId(), title: trimmed, completed: false };
+          setTasks((prev) => [...prev, newTask]);
+          setNewTaskTitle("");
+        };
+
+        const handleToggleTask = (id) => {
+          setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)));
+        };
+
+        const handleStartEdit = (task) => { setEditingId(task.id); setEditingTitle(task.title); };
+        const handleSaveEdit = (id) => { const trimmed = editingTitle.trim(); if (!trimmed) return; setTasks((prev) => prev.map((task) => task.id === id ? { ...task, title: trimmed } : task)); setEditingId(null); setEditingTitle(""); };
+        const handleCancelEdit = () => { setEditingId(null); setEditingTitle(""); };
+        const handleDeleteTask = (id) => { setTasks((prev) => prev.filter((task) => task.id !== id)); };
+
+        const hasTasks = tasks.length > 0;
+
+        return (
+          <div style={{ maxWidth: "480px", margin: "2rem auto", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)", fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+            <h1 style={{ textAlign: "center", marginBottom: "1rem" }}>Todo App</h1>
+            <form onSubmit={handleAddTask} style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
+              <input type="text" value={newTaskTitle} onChange={(e) => setNewTaskTitle(e.target.value)} placeholder="Add a new task..." style={{ flex: 1, padding: "0.5rem 0.75rem", borderRadius: "8px", border: "1px solid #ddd" }} />
+              <button type="submit" style={{ padding: "0.5rem 1rem", borderRadius: "8px", border: "none", cursor: "pointer" }}>Add</button>
+            </form>
+
+            {!hasTasks && <p style={{ textAlign: "center", color: "#777" }}>No tasks yet. Add your first one!</p>}
+
+            {hasTasks && (
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {tasks.map((task) => (
+                  <li key={task.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 0", borderBottom: "1px solid #eee" }}>
+                    <input type="checkbox" checked={task.completed} onChange={() => handleToggleTask(task.id)} />
+                    {editingId === task.id ? (
+                      <>
+                        <input type="text" value={editingTitle} onChange={(e) => setEditingTitle(e.target.value)} style={{ flex: 1, padding: "0.3rem 0.5rem", borderRadius: "6px", border: "1px solid #ddd" }} />
+                        <button onClick={() => handleSaveEdit(task.id)}>Save</button>
+                        <button onClick={handleCancelEdit}>Cancel</button>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ flex: 1, textDecoration: task.completed ? "line-through" : "none", color: task.completed ? "#888" : "inherit" }}>{task.title}</span>
+                        <button onClick={() => handleStartEdit(task)}>Edit</button>
+                        <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+    </script>
+  </body>
+</html>
